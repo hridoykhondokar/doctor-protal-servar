@@ -22,24 +22,30 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 client.connect(err => {
   const appointmentCollection = client.db(`${process.env.DB_NAME}`).collection("appointment");
   console.log('db ok')
-  
+
   app.post('/addAppointment', (req, res) => {
     const appointment = req.body;
     appointmentCollection.insertOne(appointment)
-    .then(result => {
-      res.send(result.insertedCount > 0);
-    })
+      .then(result => {
+        res.send(result.insertedCount > 0);
+      })
   })
 
-    app.post('/appointmentByDate', (req, res) => {
-      const time = req.body;
-      console.log(time.date);
-      appointmentCollection.find({date: time.date})
-      .toArray(documents => {
-        res.send(documents);
+  
+  app.get('/appointmentByDate/:date', (req, res) => {
+    appointmentCollection.find({ date: req.params.date })
+      .toArray((err, documents) => {
+        res.send(documents)
       })
-    })
+  })
 
+  // app.get('/allAppointments', (req, res) => {
+
+  //   appointmentCollection.find({})
+  //     .toArray((err, documents) => {
+  //       res.send(documents)
+  //     })
+  // })
 
 
 });
